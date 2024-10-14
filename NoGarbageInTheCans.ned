@@ -79,8 +79,9 @@ network GarbageCollectionNetwork
 {
     parameters:
         int numHosts;
-        @display("bgb=983,399");
-        @figure[backgroundText](type=text; pos=700,50; text="This is a background message"; color=black);
+        @display("bgb=1271.9962,398.50125");
+        @figure[backgroundText](type=text; pos=750,20; text="No garbage solution"; color=black; font="Arial, bold");
+        @figure[text](type=text; pos=750,80; text="Slow connection from the smartphone to others (time it takes) = \nSlow connection from others to the smartphone (time it takes) = \nFast connection from the smartphone to others (time it takes) = \nFast connection from others to the smartphone (time it takes) = \n\nConnection from the can to others (time it takes) = \nConnection from others to the can (time it takes) = \n\nConnection from the anotherCan to others (time it takes) = \nConnection from others to the anotherCan (time it takes) = \n\nSlow connection from the Cloud to others (time it takes) = \nSlow connection from others to the Cloud (time it takes) = \nFast connection from the Cloud to others (time it takes) = \nFast connection from others to the Cloud (time it takes) ="; color=black; font="Arial, 5");
     submodules:
         can: CanNode {
             parameters:
@@ -99,7 +100,7 @@ network GarbageCollectionNetwork
                 @display("p=450.76874,100.51625;r=45;t=sentHostFast: 0 rcvdHostFast: 0 sentHostSlow: 0 rcvdHostSlow: 0");
         }
         visualizer: IntegratedVisualizer {
-            @display("p=50,50");
+            @display("p=671.16,29.61");
         }
         physicalEnvironment: PhysicalEnvironment {
             parameters:
