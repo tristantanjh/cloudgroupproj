@@ -47,19 +47,19 @@ network GarbageCollectionNetwork
     submodules:
         can: CanNode {
             parameters:
-                @display("p=144.925,69.19");
+                @display("p=226.93875,62.175;r=90");
         }
         anotherCan: CanNode {
             parameters:
-                @display("p=181.39,218.79001");
+                @display("p=215.54,202.06876;r=90");
         }
         cloud: CloudNode {
             parameters:
-                @display("p=678.81,134.64");
+                @display("p=555.43,137.82124;r=360");
         }
         host: TruckNode {
             parameters:
-                @display("p=505.83502,101.915");
+                @display("p=449.7325,83.93625;r=45");
         }
     connections:
         can.out++ --> {  delay = 100ms; } --> cloud.in++;
