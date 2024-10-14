@@ -61,12 +61,9 @@ network GarbageCollectionNetwork
             parameters:
                 @display("p=548.1763,136.785;r=360");
         }
-        host: TruckNode {
+        host[numHosts]: TruckNode {
             parameters:
                 @display("p=450.76874,100.51625;r=45");
-        }
-        host2[numHosts]: StandardHost {
-            @display("i=misc/smartphone");
         }
         visualizer: IntegratedVisualizer {
             @display("p=50,50");
