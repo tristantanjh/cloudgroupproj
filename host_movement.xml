@@ -1,8 +1,10 @@
 <movement>
-    <set speed="30" x="143" y="100" z="0"/>
-    <forward d="100"/>
-    <turn angle="90"/>
-    <forward d="100"/>
-    <turn angle="90"/>
-    <forward d="100"/>
+    <set speed="150" angle="180" x="443" y="135" z="0"/>
+    <forward d="340"/>
+    <turn angle="-90"/>
+    <wait t="5"/>
+    <forward d="180"/>
+    <turn angle="-90"/>
+    <wait t="5"/>
+    <forward d="340"/>
 </movement>
