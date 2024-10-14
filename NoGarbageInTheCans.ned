@@ -47,15 +47,16 @@ network GarbageCollectionNetwork
 {
     parameters:
         int numHosts;
-        @display("bgb=691.1788,399.9925");
+        @display("bgb=983,399");
+        @figure[backgroundText](type=text; pos=700,50; text="This is a background message"; color=black);
     submodules:
         can: CanNode {
             parameters:
-                @display("p=215.54,60.1025;r=90");
+                @display("p=215.54,60.1025;r=90;t=sentCanFast: 0 rcvdCanFast: 0 numberOfLostCanMsgs: 0");
         }
         anotherCan: CanNode {
             parameters:
-                @display("p=215.54,203.105;r=90");
+                @display("p=215.54,203.105;r=90;t=sentAnotherCanFast: 0 rcvdAnotherCanFast: 0 numberOfLostAnotherCanMsgs: 0");
         }
         cloud: CloudNode {
             parameters:
@@ -63,7 +64,7 @@ network GarbageCollectionNetwork
         }
         host[numHosts]: TruckNode {
             parameters:
-                @display("p=450.76874,100.51625;r=45");
+                @display("p=450.76874,100.51625;r=45;t=sentHostFast: 0 rcvdHostFast: 0 sentHostSlow: 0 rcvdHostSlow: 0");
         }
         visualizer: IntegratedVisualizer {
             @display("p=50,50");
