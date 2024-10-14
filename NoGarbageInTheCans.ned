@@ -55,11 +55,11 @@ network GarbageCollectionNetwork
         }
         anotherCan: CanNode {
             parameters:
-                @display("p=215.54,203.105;r=90");
+                @display("p=215.54,223.105;r=90");
         }
         cloud: CloudNode {
             parameters:
-                @display("p=548.1763,136.785;r=360");
+                @display("p=548.1763,226.785;r=360");
         }
         host[numHosts]: TruckNode {
             parameters:
