@@ -15,6 +15,7 @@
 
 import inet.node.inet.StandardHost;
 import inet.visualizer.common.IntegratedVisualizer;
+import inet.environment.common.PhysicalEnvironment;
 
 simple CanNode
 {
@@ -46,25 +47,33 @@ network GarbageCollectionNetwork
 {
     parameters:
         int numHosts;
-    	@display("bgb=825.60504,266.475");
+        @display("bgb=691.1788,399.9925");
     submodules:
         can: CanNode {
             parameters:
-                @display("p=226.93875,62.175;r=90");
+                @display("p=215.54,60.1025;r=90");
         }
         anotherCan: CanNode {
             parameters:
-                @display("p=215.54,202.06876;r=90");
+                @display("p=215.54,203.105;r=90");
         }
         cloud: CloudNode {
             parameters:
-                @display("p=555.43,137.82124;r=360");
+                @display("p=548.1763,136.785;r=360");
         }
-        host[numHosts]: TruckNode {
+        host: TruckNode {
+            parameters:
+                @display("p=450.76874,100.51625;r=45");
+        }
+        host2[numHosts]: StandardHost {
             @display("i=misc/smartphone");
         }
         visualizer: IntegratedVisualizer {
             @display("p=50,50");
+        }
+        physicalEnvironment: PhysicalEnvironment {
+            parameters:
+                @display("p=607.2425,328.49124");
         }
     connections:
         can.out++ --> {  delay = 100ms; } --> cloud.in++;

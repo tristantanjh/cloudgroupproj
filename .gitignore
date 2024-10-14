@@ -1,1 +1,10 @@
 out/
+.cproject
+.project
+.nedexclusions
+.oppbuildspec
+.oppfeaturestate
+.qtenvrc
+groupproject.exe
+Makefile
+.settings/
