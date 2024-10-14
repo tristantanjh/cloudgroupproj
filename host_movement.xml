@@ -1,0 +1,8 @@
+<movement>
+    <set speed="30" x="143" y="100" z="0"/>
+    <forward d="100"/>
+    <turn angle="90"/>
+    <forward d="100"/>
+    <turn angle="90"/>
+    <forward d="100"/>
+</movement>
