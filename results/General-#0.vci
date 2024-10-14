@@ -1,0 +1,51 @@
+                                                                
+version 3
+run General-0-20241014-21:54:28-13540
+attr configname General
+attr datetime 20241014-21:54:28
+attr datetimef 20241014-215428
+attr experiment General
+attr inifile omnetpp.ini
+attr iterationvars ""
+attr iterationvarsd ""
+attr iterationvarsf ""
+attr measurement ""
+attr network GarbageCollectionNetwork
+attr processid 13540
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+config image-path ../../omnet/omnetpp-6.0.3/samples/inet4.5/images
+config network GarbageCollectionNetwork
+config *.physicalEnvironment.config "xmldoc(\"objects.xml\")"
+config **.networkConfiguratorModule "\"\""
+config *.visualizer.*.mobilityVisualizer.displayMobility true
+config *.visualizer.*.mobilityVisualizer.displayPositions true
+config *.visualizer.*.mobilityVisualizer.displayOrientations true
+config *.visualizer.*.mobilityVisualizer.displayVelocities true
+config *.visualizer.*.mobilityVisualizer.displayMovementTrails true
+config *.numHosts 1
+config *.host[*].mobility.typename TurtleMobility
+config **.mobility.speed 40mps
+config *.host[0].mobility.turtleScript "xmldoc(\"host_movement.xml\")"
+
+vector 0 GarbageCollectionNetwork.host[0].udp passedUpPk:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetSentToUpper
+attr title "packets passed up, count"
+vector 1 GarbageCollectionNetwork.host[0].udp droppedPkWrongPort:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetDropReasonIsNoPortFound(packetDropped)
+attr title "packets dropped (wrong port), count"
+vector 2 GarbageCollectionNetwork.host[0].udp droppedPkBadChecksum:vector(count) ETV
+attr interpolationmode none
+attr recordingmode vector(count)
+attr source packetDropReasonIsIncorrectlyReceived(packetDropped)
+attr title "packets dropped (checksum error), count"
+0	1897 9 0 0 0 0 1 0 0 0 0
+1	1906 9 0 0 0 0 1 0 0 0 0
+2	1915 9 0 0 0 0 1 0 0 0 0
