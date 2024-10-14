@@ -18,8 +18,8 @@ simple CanNode
     parameters:
         @display("i=block/bucket");
     gates:
-        input in;
-        output out;
+        input in[];
+        output out[];
 }
 
 simple TruckNode
@@ -27,8 +27,8 @@ simple TruckNode
     parameters:
         @display("i=block/wheelbarrow");
     gates:
-        input in;
-        output out;
+        input in[];
+        output out[];
 }
 
 simple CloudNode
@@ -36,18 +36,10 @@ simple CloudNode
     parameters:
         @display("i=old/pc");
     gates:
-        input in;
-        output out;
+        input in[];
+        output out[];
 }
 
-simple VisualizerNode
-{
-    parameters:
-        @display("i=block/app");
-    gates:
-        input in;
-        output out;
-}
 
 network GarbageCollectionNetwork
 {
@@ -65,27 +57,23 @@ network GarbageCollectionNetwork
             parameters:
                 @display("p=678.81,134.64");
         }
-        host[0]: TruckNode {
+        host: TruckNode {
             parameters:
                 @display("p=505.83502,101.915");
         }
-        visualizer: VisualizerNode {
-            parameters:
-                @display("p=453.475,32.725002");
-        }
     connections:
-        can.out --> {  delay = 100ms; } --> cloud.in;
-        can.in <-- {  delay = 100ms; } <-- cloud.out;
+        can.out++ --> {  delay = 100ms; } --> cloud.in++;
+        can.in++ <-- {  delay = 100ms; } <-- cloud.out++;
 
-        can.out --> {  delay = 100ms; } --> host[0].in;
-        can.in <-- {  delay = 100ms; } <-- host[0].out;
+        can.out++ --> {  delay = 100ms; } --> host.in++;
+        can.in++ <-- {  delay = 100ms; } <-- host.out++;
 
-        anotherCan.out --> {  delay = 100ms; } --> cloud.in;
-        anotherCan.in <-- {  delay = 100ms; } <-- cloud.out;
+        anotherCan.out++ --> {  delay = 100ms; } --> cloud.in++;
+        anotherCan.in++ <-- {  delay = 100ms; } <-- cloud.out++;
 
-        anotherCan.out --> {  delay = 100ms; } --> host[0].in;
-        anotherCan.in <-- {  delay = 100ms; } <-- host[0].out;
+        anotherCan.out++ --> {  delay = 100ms; } --> host.in++;
+        anotherCan.in++ <-- {  delay = 100ms; } <-- host.out++;
 
-        host[0].out --> {  delay = 100ms; } --> cloud.in;
-        host[0].in <-- {  delay = 100ms; } <-- cloud.out;
+        host.out++ --> {  delay = 100ms; } --> cloud.in++;
+        host.in++ <-- {  delay = 100ms; } <-- cloud.out++;
 }
