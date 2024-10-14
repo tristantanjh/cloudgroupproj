@@ -26,14 +26,6 @@ simple CanNode
         output out[];
 }
 
-simple TruckNode
-{
-    parameters:
-        @display("i=block/wheelbarrow");
-    gates:
-        input in[];
-        output out[];
-}
 
 simple CloudNode
 {
@@ -44,6 +36,12 @@ simple CloudNode
         output out[];
 }
 
+module TruckNode extends StandardHost
+{
+    gates:
+        input in[];
+        output out[];
+}
 
 network GarbageCollectionNetwork
 {
@@ -81,15 +79,15 @@ network GarbageCollectionNetwork
         can.out++ --> {  delay = 100ms; } --> cloud.in++;
         can.in++ <-- {  delay = 100ms; } <-- cloud.out++;
 
-        can.out++ --> {  delay = 100ms; } --> host.in++;
-        can.in++ <-- {  delay = 100ms; } <-- host.out++;
+        can.out++ --> {  delay = 100ms; } --> host[0].in++;
+        can.in++ <-- {  delay = 100ms; } <-- host[0].out++;
 
         anotherCan.out++ --> {  delay = 100ms; } --> cloud.in++;
         anotherCan.in++ <-- {  delay = 100ms; } <-- cloud.out++;
 
-        anotherCan.out++ --> {  delay = 100ms; } --> host.in++;
-        anotherCan.in++ <-- {  delay = 100ms; } <-- host.out++;
+        anotherCan.out++ --> {  delay = 100ms; } --> host[0].in++;
+        anotherCan.in++ <-- {  delay = 100ms; } <-- host[0].out++;
 
-        host.out++ --> {  delay = 100ms; } --> cloud.in++;
-        host.in++ <-- {  delay = 100ms; } <-- cloud.out++;
+        host[0].out++ --> {  delay = 100ms; } --> cloud.in++;
+        host[0].in++ <-- {  delay = 100ms; } <-- cloud.out++;
 }
