@@ -1,8 +1,8 @@
 version 3
-run General-0-20241014-18:33:11-11604
+run General-0-20241014-21:54:28-13540
 attr configname General
-attr datetime 20241014-18:33:11
-attr datetimef 20241014-183311
+attr datetime 20241014-21:54:28
+attr datetimef 20241014-215428
 attr experiment General
 attr inifile omnetpp.ini
 attr iterationvars ""
@@ -10,7 +10,7 @@ attr iterationvarsd ""
 attr iterationvarsf ""
 attr measurement ""
 attr network GarbageCollectionNetwork
-attr processid 11604
+attr processid 13540
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -18,7 +18,7 @@ attr runnumber 0
 attr seedset 0
 config image-path ../../omnet/omnetpp-6.0.3/samples/inet4.5/images
 config network GarbageCollectionNetwork
-config *.physicalEnvironment.config "xmldoc(\"environment.xml\")"
+config *.physicalEnvironment.config "xmldoc(\"objects.xml\")"
 config **.networkConfiguratorModule "\"\""
 config *.visualizer.*.mobilityVisualizer.displayMobility true
 config *.visualizer.*.mobilityVisualizer.displayPositions true
@@ -48,4 +48,3 @@ attr title "packets dropped (checksum error), count"
 0	0	0	0
 1	0	0	0
 2	0	0	0
-
