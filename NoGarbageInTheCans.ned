@@ -13,7 +13,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-import inet.node.inet.StandardHost;
+import inet.mobility.contract.IMobility;
+import inet.mobility.single.TurtleMobility;
 import inet.visualizer.common.IntegratedVisualizer;
 import inet.environment.common.PhysicalEnvironment;
 
@@ -36,11 +37,42 @@ simple CloudNode
         output out[];
 }
 
-module TruckNode extends StandardHost
+simple Host
 {
+    parameters:
+        @display("i=misc/cloud"); // add a default icon
+        int sendMessagePowerCloud = default(0);
+        int sendMessagePowerComp = default(0);
+        int receiveMessagePowerCloud = default(0);
+        int receiveMessagePowerComp = default(0);
+        int sendMessageDelayCloud = default(0);
+        int sendMessageDelayComp = default(0);
+        int receiveMessageDelayCloud = default(0);
+        int receiveMessageDelayComp = default(0);
     gates:
-        input in[];
-        output out[];
+        input in[3];
+        output out[3];
+}
+
+module TruckHost  {
+    parameters:
+        bool left = default(false); // Flag indicating whether the book is in the left-hand shelf
+        @display("i=device/pocketpc"); // add a default icon
+	gates:
+	    input in[];
+	    output out[];
+    submodules:
+        mobility: <default("StationaryMobility")> like IMobility {
+            @display("p=100,100;is=s");
+        }
+        host: Host;
+    connections:
+        host.out[0] --> out[0];
+        host.in[0] <-- in[0];
+        host.out[1] --> out[1];
+        host.in[1] <-- in[1];
+        host.out[2] --> out[2];
+        host.in[2] <-- in[2];
 }
 
 network GarbageCollectionNetwork
@@ -62,7 +94,7 @@ network GarbageCollectionNetwork
             parameters:
                 @display("p=548.1763,226.785;r=360");
         }
-        host[numHosts]: TruckNode {
+        host[numHosts]: TruckHost {
             parameters:
                 @display("p=450.76874,100.51625;r=45;t=sentHostFast: 0 rcvdHostFast: 0 sentHostSlow: 0 rcvdHostSlow: 0");
         }
