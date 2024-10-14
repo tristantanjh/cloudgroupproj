@@ -1,0 +1,15 @@
+<environment>
+	<object position="min 320 -150 0" orientation="90 0 0" shape="cuboid 5 500 10"
+             material="concrete" line-color="0 0 0" fill-color="0 0 0"/>
+	<object position="min 320 100 0" orientation="90 0 0" shape="cuboid 5 500 10"
+             material="concrete" line-color="0 0 0" fill-color="0 0 0"/>
+	<object position="min 70 100 0" orientation="0 0 0" shape="cuboid 5 250 10"
+             material="concrete" line-color="0 0 0" fill-color="0 0 0"/>
+             
+	<object position="min 320 0 0" orientation="90 0 0" shape="cuboid 5 350 10"
+             material="concrete" line-color="0 0 0" fill-color="0 0 0"/>
+	<object position="min 320 100 0" orientation="90 0 0" shape="cuboid 5 350 10"
+             material="concrete" line-color="0 0 0" fill-color="0 0 0"/>
+	<object position="min 145 175 0" orientation="0 0 0" shape="cuboid 5 100 10"
+             material="concrete" line-color="0 0 0" fill-color="0 0 0"/>
+</environment>
