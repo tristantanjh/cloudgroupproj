@@ -13,6 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
+import inet.node.inet.StandardHost;
+import inet.visualizer.common.IntegratedVisualizer;
+
 simple CanNode
 {
     parameters:
@@ -22,14 +25,6 @@ simple CanNode
         output out[];
 }
 
-simple TruckNode
-{
-    parameters:
-        @display("i=block/wheelbarrow");
-    gates:
-        input in[];
-        output out[];
-}
 
 simple CloudNode
 {
@@ -40,10 +35,18 @@ simple CloudNode
         output out[];
 }
 
+module TruckNode extends StandardHost
+{
+    gates:
+        input in[];
+        output out[];
+}
 
 network GarbageCollectionNetwork
 {
-    @display("bgb=825.60504,266.475");
+    parameters:
+        int numHosts;
+    	@display("bgb=825.60504,266.475");
     submodules:
         can: CanNode {
             parameters:
@@ -57,23 +60,25 @@ network GarbageCollectionNetwork
             parameters:
                 @display("p=678.81,134.64");
         }
-        host: TruckNode {
-            parameters:
-                @display("p=505.83502,101.915");
+        host[numHosts]: TruckNode {
+            @display("i=misc/smartphone");
+        }
+        visualizer: IntegratedVisualizer {
+            @display("p=50,50");
         }
     connections:
         can.out++ --> {  delay = 100ms; } --> cloud.in++;
         can.in++ <-- {  delay = 100ms; } <-- cloud.out++;
 
-        can.out++ --> {  delay = 100ms; } --> host.in++;
-        can.in++ <-- {  delay = 100ms; } <-- host.out++;
+        can.out++ --> {  delay = 100ms; } --> host[0].in++;
+        can.in++ <-- {  delay = 100ms; } <-- host[0].out++;
 
         anotherCan.out++ --> {  delay = 100ms; } --> cloud.in++;
         anotherCan.in++ <-- {  delay = 100ms; } <-- cloud.out++;
 
-        anotherCan.out++ --> {  delay = 100ms; } --> host.in++;
-        anotherCan.in++ <-- {  delay = 100ms; } <-- host.out++;
+        anotherCan.out++ --> {  delay = 100ms; } --> host[0].in++;
+        anotherCan.in++ <-- {  delay = 100ms; } <-- host[0].out++;
 
-        host.out++ --> {  delay = 100ms; } --> cloud.in++;
-        host.in++ <-- {  delay = 100ms; } <-- cloud.out++;
+        host[0].out++ --> {  delay = 100ms; } --> cloud.in++;
+        host[0].in++ <-- {  delay = 100ms; } <-- cloud.out++;
 }
