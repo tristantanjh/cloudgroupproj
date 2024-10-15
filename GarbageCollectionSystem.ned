@@ -83,7 +83,11 @@ network GarbageCollectionSystem
         int numHosts;
         @display("bgb=1271.9962,398.50125");
         @figure[backgroundText](type=text; pos=750,20; text="No garbage solution"; color=black; font="Arial, bold");
-        @figure[text](type=text; pos=750,80; text="Slow connection from the smartphone to others (time it takes) = \nSlow connection from others to the smartphone (time it takes) = \nFast connection from the smartphone to others (time it takes) = \nFast connection from others to the smartphone (time it takes) = \n\nConnection from the can to others (time it takes) = \nConnection from others to the can (time it takes) = \n\nConnection from the anotherCan to others (time it takes) = \nConnection from others to the anotherCan (time it takes) = \n\nSlow connection from the Cloud to others (time it takes) = \nSlow connection from others to the Cloud (time it takes) = \nFast connection from the Cloud to others (time it takes) = \nFast connection from others to the Cloud (time it takes) ="; color=black; font="Arial, 5");
+        @figure[hostText](type=text; pos=750,80; text="Slow connection from the smartphone to others (time it takes) = \nSlow connection from others to the smartphone (time it takes) = \nFast connection from the smartphone to others (time it takes) = \nFast connection from others to the smartphone (time it takes) = \n\n"; color=black; font="Arial, 5");
+        @figure[canText](type=text; pos=750,180; text="Connection from the can to others (time it takes) = \nConnection from others to the can (time it takes) = \n\n"; color=black; font="Arial, 5");
+        @figure[anotherCanText](type=text; pos=750,230; text="Connection from the anotherCan to others (time it takes) = \nConnection from others to the anotherCan (time it takes) = \n\n"; color=black; font="Arial, 5");
+        @figure[cloudText](type=text; pos=750,300; text="Slow connection from the Cloud to others (time it takes) = \nSlow connection from others to the Cloud (time it takes) = \nFast connection from the Cloud to others (time it takes) = \nFast connection from others to the Cloud (time it takes) ="; color=black; font="Arial, 5");
+        
     submodules:
         can: CanNode {
             parameters:
@@ -95,7 +99,7 @@ network GarbageCollectionSystem
         }
         cloud: CloudNode {
             parameters:
-                @display("p=548.1763,226.785;r=360");
+                @display("p=548.1763,226.785;r=360;t=sentCloudFast: 0 rcvdCloudFast: 0 sentCloudSlow: 0 rcvdCloudSlow: 0");
         }
         host[numHosts]: TruckHost {
             parameters:
