@@ -93,19 +93,76 @@ void CanNode::noGarbageBehavior(cMessage *msg)
 
 void CanNode::slowGarbageBehavior(cMessage *msg)
 {
-    if (msgCounter >= 3) {
-        EV << "final msg of this trash can";
-        cMessage *newMsg = new cMessage("3-YES");
-        send(newMsg, "out", 1);
-    } else {
-        bubble("Lost Message");
+    if (strcmp(msg->getName(), "1-Is the can full?") == 0){
+        if (msgCounter >= 3) {
+            EV << "final msg of this trash can";
+            cMessage *newMsg = new cMessage("3-YES");
+            sentCanFast++;
+            rcvdCanFast++;
+            updateDisplay();
+            send(newMsg, "out", 1);
+        } else {
+            numberOfLostCanMsgs++;
+            updateDisplay();
+            bubble("Lost Message");
+        }
+        msgCounter++;
+    } else if (strcmp(msg->getName(), "4-Is the can full?") == 0){
+        if (msgCounter2 >= 3) {
+            EV << "final msg of this trash can";
+            cMessage *newMsg = new cMessage("6-YES");
+            sentCanFast2++;
+            rcvdCanFast2++;
+            updateDisplay2();
+            send(newMsg, "out", 1);
+        } else {
+            numberOfLostCanMsgs2++;
+            updateDisplay2();
+            bubble("Lost Message");
+        }
+        msgCounter2++;
     }
-    msgCounter++;
 }
 
 void CanNode::fastGarbageBehavior(cMessage *msg)
 {
+    if (strcmp(msg->getName(), "1-Is the can full?") == 0){
+        if (msgCounter >= 3) {
+            EV << "final msg of this trash can to host";
+            cMessage *newMsg = new cMessage("3-YES");
+            sentCanFast++;
+            rcvdCanFast++;
+            updateDisplay();
+            send(newMsg, "out", 1);
 
+            EV << "final msg of this trash can to cloud";
+            cMessage *cloudMsg = new cMessage("7-Collect can garbage");
+            send(cloudMsg, "out", 0);
+        } else {
+            numberOfLostCanMsgs++;
+            updateDisplay();
+            bubble("Lost Message");
+        }
+        msgCounter++;
+    } else if (strcmp(msg->getName(), "4-Is the can full?") == 0){
+        if (msgCounter2 >= 3) {
+            EV << "final msg of this trash can";
+            cMessage *newMsg = new cMessage("6-YES");
+            sentCanFast2++;
+            rcvdCanFast2++;
+            updateDisplay2();
+            send(newMsg, "out", 1);
+
+            EV << "final msg of this trash can to cloud";
+            cMessage *cloudMsg = new cMessage("9-Collect can garbage");
+            send(cloudMsg, "out", 0);
+        } else {
+            numberOfLostCanMsgs2++;
+            updateDisplay2();
+            bubble("Lost Message");
+        }
+        msgCounter2++;
+    }
 }
 
 void CanNode::finish()
@@ -274,28 +331,126 @@ void Host::noGarbageBehavior(cMessage *msg)
 void Host::slowGarbageBehavior(cMessage *msg)
 {
     if (msg == msgDelay) {
-        EV << "Initial Message at t=4.0" << endl;
+        if (trashCanInteracted == 0) {
+            // This block is executed when the delayed message is triggered
+            EV << "Initial Message at t=4.0" << endl;
 
-        // Send the message through the specified output gate by index
-        cMessage *firstMessage = new cMessage("1-Is the can full?");
-        send(firstMessage, "out", 0); // "out" is the base name of the gates, targetGateIndex is the gate index
+            // Send the message through the specified output gate by index
+            cMessage *firstMessage = new cMessage("1-Is the can full?");
+            sentHostFast++;
+
+            updateDisplay();
+            send(firstMessage, "out", 0); // "out" is the base name of the gates, targetGateIndex is the gate index
+        } else if (trashCanInteracted == 1) {
+            // This block is executed when the delayed message is triggered
+            EV << "first message to 2nd trashcan" << endl;
+
+            // Send the message through the specified output gate by index
+            cMessage *secondMessage = new cMessage("4-Is the can full?");
+            sentHostFast++;
+            updateDisplay();
+            send(secondMessage, "out", 1); // "out" is the base name of the gates, targetGateIndex is the gate index
+        }
     } else if (msg == timeoutEvent) {
         // Handle timeout events for interaction with first trash can
         if (timeoutCounter < 3) {
-            cMessage *newMsg = new cMessage("1-Is the can full?");
-            send(newMsg, "out", 0);
+            if (trashCanInteracted == 0) {
+                cMessage *newMsg = new cMessage("1-Is the can full?");
+                send(newMsg, "out", 0);
+                sentHostFast++;
+                updateDisplay();
 
+            } else if (trashCanInteracted == 1) {
+                cMessage *newMsg = new cMessage("4-Is the can full?");
+                send(newMsg, "out", 1);
+                sentHostFast++;
+                updateDisplay();
+            }
             EV << "Timeout expired, resending message and restarting timer\n";
             scheduleAt(simTime()+timeout, timeoutEvent);
             timeoutCounter++;
 
         }
+    } else if (strcmp(msg->getName(), "3-YES") == 0) {
+        EV << "Sending first message to cloud\n";
+        cMessage *newMsg = new cMessage("7-Collect garbage");
+        send(newMsg, "out", 2);
+    } else if (strcmp(msg->getName(), "8-OK") == 0) {
+        EV << "Received first ok from cloud\n";
+        timeoutCounter = 0;
+        trashCanInteracted = 1;
+
+        // send first message to 2nd trash can
+        msgDelay = new cMessage("msgDelay");
+        scheduleAt(simTime() + initialDelay, msgDelay);
+
+        // second timeout event to 2nd trash can
+        timeoutEvent = new cMessage("second timeout");
+        scheduleAt(simTime() + initialDelay + timeout, timeoutEvent);
+    } else if (strcmp(msg->getName(), "6-YES") == 0) {
+        EV << "Sending SECOND message to cloud\n";
+        cMessage *newMsg = new cMessage("9-Collect garbage");
+        send(newMsg, "out", 2);
     }
 }
 
 void Host::fastGarbageBehavior(cMessage *msg)
 {
+    if (msg == msgDelay) {
+        if (trashCanInteracted == 0) {
+            // This block is executed when the delayed message is triggered
+            EV << "Initial Message at t=4.0" << endl;
 
+            // Send the message through the specified output gate by index
+            cMessage *firstMessage = new cMessage("1-Is the can full?");
+            sentHostFast++;
+
+            updateDisplay();
+            send(firstMessage, "out", 0); // "out" is the base name of the gates, targetGateIndex is the gate index
+        } else if (trashCanInteracted == 1) {
+            // This block is executed when the delayed message is triggered
+            EV << "first message to 2nd trashcan" << endl;
+
+            // Send the message through the specified output gate by index
+            cMessage *secondMessage = new cMessage("4-Is the can full?");
+            sentHostFast++;
+            updateDisplay();
+            send(secondMessage, "out", 1); // "out" is the base name of the gates, targetGateIndex is the gate index
+        }
+    } else if (msg == timeoutEvent) {
+        // Handle timeout events for interaction with first trash can
+        if (timeoutCounter < 3) {
+            if (trashCanInteracted == 0) {
+                cMessage *newMsg = new cMessage("1-Is the can full?");
+                send(newMsg, "out", 0);
+                sentHostFast++;
+                updateDisplay();
+
+            } else if (trashCanInteracted == 1) {
+                cMessage *newMsg = new cMessage("4-Is the can full?");
+                send(newMsg, "out", 1);
+                sentHostFast++;
+                updateDisplay();
+            }
+            EV << "Timeout expired, resending message and restarting timer\n";
+            scheduleAt(simTime()+timeout, timeoutEvent);
+            timeoutCounter++;
+
+        }
+    } else if (strcmp(msg->getName(), "3-YES") == 0){
+        timeoutCounter = 0;  //reset timeout counter
+        trashCanInteracted++;  // add 1 to trash counter
+        rcvdHostFast++;
+        updateDisplay();
+
+        // send first message to 2nd trash can
+        msgDelay = new cMessage("msgDelay");
+        scheduleAt(simTime() + initialDelay, msgDelay);
+
+        // second timeout event to 2nd trash can
+        timeoutEvent = new cMessage("second timeout");
+        scheduleAt(simTime() + initialDelay + timeout, timeoutEvent);
+    }
 }
 
 void Host::updateDisplay()
@@ -314,20 +469,62 @@ class CloudNode : public cSimpleModule
     protected:
         virtual void initialize() override;
         virtual void handleMessage(cMessage *msg) override;
+        virtual void noGarbageBehaviour(cMessage *msg);
+        virtual void slowGarbageBehaviour(cMessage *msg);
+        virtual void fastGarbageBehaviour(cMessage *msg);
+    private:
+        int configType;
+        int interactionCounter;
 };
 
 Define_Module(CloudNode);
 
 void CloudNode::initialize()
 {
-    cMessage *msg = new cMessage("I am Cloud Node");
+    // init variables
+    configType = par("configType");
+    interactionCounter = 0;
 }
 
 void CloudNode::handleMessage(cMessage *msg)
 {
-    bubble("received");
+    if (configType == 1) {
+        noGarbageBehaviour(msg);
+    } else if (configType == 2) {
+        slowGarbageBehaviour(msg);
+    } else {
+        fastGarbageBehaviour(msg);
+    }
 }
 
+void CloudNode::noGarbageBehaviour(cMessage *msg)
+{
+
+}
+
+void CloudNode::slowGarbageBehaviour(cMessage *msg)
+{
+    if (interactionCounter == 0) {
+        interactionCounter++;
+        cMessage *newMsg = new cMessage("8-OK");
+		send(newMsg, "out", 2);
+    } else {
+        cMessage *newMsg = new cMessage("10-OK");
+		send(newMsg, "out", 2);
+    }
+}
+
+void CloudNode::fastGarbageBehaviour(cMessage *msg)
+{
+    if (interactionCounter == 0) {
+        interactionCounter++;
+        cMessage *newMsg = new cMessage("8-OK");
+        send(newMsg, "out", 0);
+    } else {
+        cMessage *newMsg = new cMessage("10-OK");
+        send(newMsg, "out", 1);
+    }
+}
 ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////
 
