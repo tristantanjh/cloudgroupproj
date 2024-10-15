@@ -201,6 +201,10 @@ void Host::behaviour2(cMessage *msg)
             timeoutCounter++;
 
         }
+    } else if (strcmp(msg->getName(), "3-YES") == 0) {
+        EV << "Sending first message to cloud\n";
+        cMessage *newMsg = new cMessage("7-Collect garbage");
+        send(newMsg, "out", 2);
     }
 }
 
@@ -219,20 +223,48 @@ class CloudNode : public cSimpleModule
     protected:
         virtual void initialize() override;
         virtual void handleMessage(cMessage *msg) override;
+        virtual void noGarbageBehaviour(cMessage *msg);
+        virtual void slowGarbageBehaviour(cMessage *msg);
+        virtual void fastGarbageBehaviour(cMessage *msg);
+    private:
+        int configType;
+        int interactionCounter;
 };
 
 Define_Module(CloudNode);
 
 void CloudNode::initialize()
 {
-    cMessage *msg = new cMessage("I am Cloud Node");
+    // init variables
+    configType = par("configType");
+    interactionCounter = 0;
 }
 
 void CloudNode::handleMessage(cMessage *msg)
 {
-    bubble("received");
+    if (configType == 1) {
+        noGarbageBehaviour(msg);
+    } else if (configType == 2) {
+        slowGarbageBehaviour(msg);
+    } else {
+        fastGarbageBehaviour(msg);
+    }
 }
 
+void CloudNode::noGarbageBehaviour(cMessage *msg)
+{
+
+}
+
+void CloudNode::slowGarbageBehaviour(cMessage *msg)
+{
+
+}
+
+void CloudNode::fastGarbageBehaviour(cMessage *msg)
+{
+
+}
 ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////
 
