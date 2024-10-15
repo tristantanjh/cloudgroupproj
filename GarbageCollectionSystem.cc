@@ -13,6 +13,7 @@ class CanNode : public cSimpleModule
         virtual void noGarbageBehavior(cMessage *msg);
         virtual void slowGarbageBehavior(cMessage *msg);
         virtual void fastGarbageBehavior(cMessage *msg);
+        virtual void finish() override;
     private:
         int msgCounter;
         int msgCounter2;
@@ -40,7 +41,6 @@ void CanNode::initialize()
     rcvdCanFast2 = 0;
 
     configType = par("configType");
-
 }
 
 void CanNode::handleMessage(cMessage *msg)
@@ -60,9 +60,11 @@ void CanNode::noGarbageBehavior(cMessage *msg)
         if (msgCounter >= 3) {
             EV << "final msg of this trash can";
             cMessage *newMsg = new cMessage("2-NO");
+
             sentCanFast++;
             rcvdCanFast++;
             updateDisplay();
+
             send(newMsg, "out", 1);
         } else {
             numberOfLostCanMsgs++;
@@ -74,9 +76,11 @@ void CanNode::noGarbageBehavior(cMessage *msg)
         if (msgCounter2 >= 3) {
             EV << "final msg of this trash can";
             cMessage *newMsg = new cMessage("5-NO");
+
             sentCanFast2++;
             rcvdCanFast2++;
             updateDisplay2();
+
             send(newMsg, "out", 1);
         } else {
             numberOfLostCanMsgs2++;
@@ -104,6 +108,27 @@ void CanNode::fastGarbageBehavior(cMessage *msg)
 
 }
 
+void CanNode::finish()
+{
+    cModule *network = getParentModule();
+
+    cCanvas *canvas = network->getCanvas();
+
+    cTextFigure *textFigureHost = check_and_cast<cTextFigure*>(canvas->getFigure("hostText"));
+    cTextFigure *textFigureCan = check_and_cast<cTextFigure*>(canvas->getFigure("canText"));
+    cTextFigure *textFigureAnotherCan = check_and_cast<cTextFigure*>(canvas->getFigure("anotherCanText"));
+    cTextFigure *textFigureCloud = check_and_cast<cTextFigure*>(canvas->getFigure("cloudText"));
+
+    if (configType == 1) {
+        textFigureHost->setText("Slow connection from the smartphone to others (time it takes) = 0\nSlow connection from others to the smartphone (time it takes) = 0\nFast connection from the smartphone to others (time it takes) = 800\nFast connection from others to the smartphone (time it takes) = 200\n\n");
+
+        textFigureCan->setText("Connection from the can to others (time it takes) = 100\nConnection from others to the can (time it takes) = 100\n\n");
+
+        textFigureAnotherCan->setText("Connection from the anotherCan to others (time it takes) = 100\nConnection from others to the anotherCan (time it takes) = 100\n\n");
+
+        textFigureCloud->setText("Slow connection from the Cloud to others (time it takes) = 0\nSlow connection from others to the Cloud (time it takes) = 0\nFast connection from the Cloud to others (time it takes) = 0\nFast connection from others to the Cloud (time it takes) = 0");
+    }
+}
 
 void CanNode::updateDisplay()
 {
