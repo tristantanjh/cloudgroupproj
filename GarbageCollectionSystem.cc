@@ -10,6 +10,9 @@ class CanNode : public cSimpleModule
         virtual void handleMessage(cMessage *msg) override;
         void updateDisplay();
         void updateDisplay2();
+        virtual void noGarbageBehavior(cMessage *msg);
+        virtual void slowGarbageBehavior(cMessage *msg);
+        virtual void fastGarbageBehavior(cMessage *msg);
     private:
         int msgCounter;
         int msgCounter2;
@@ -19,6 +22,7 @@ class CanNode : public cSimpleModule
         int numberOfLostCanMsgs2;
         int sentCanFast2;
         int rcvdCanFast2;
+        int configType;  // define behaviour of node based on config
 };
 
 Define_Module(CanNode);
@@ -34,9 +38,23 @@ void CanNode::initialize()
     numberOfLostCanMsgs2 = 0;
     sentCanFast2 = 0;
     rcvdCanFast2 = 0;
+
+    configType = par("configType");
+
 }
 
 void CanNode::handleMessage(cMessage *msg)
+{
+    if (configType == 1) {
+        noGarbageBehavior(msg);
+    } else if (configType == 2) {
+        slowGarbageBehavior(msg);
+    } else {
+        fastGarbageBehavior(msg);
+    }
+}
+
+void CanNode::noGarbageBehavior(cMessage *msg)
 {
     if (strcmp(msg->getName(), "1-Is the can full?") == 0){
         if (msgCounter >= 3) {
@@ -67,8 +85,25 @@ void CanNode::handleMessage(cMessage *msg)
         }
         msgCounter2++;
     }
+}
+
+void CanNode::slowGarbageBehavior(cMessage *msg)
+{
+    if (msgCounter >= 3) {
+        EV << "final msg of this trash can";
+        cMessage *newMsg = new cMessage("3-YES");
+        send(newMsg, "out", 1);
+    } else {
+        bubble("Lost Message");
+    }
+    msgCounter++;
+}
+
+void CanNode::fastGarbageBehavior(cMessage *msg)
+{
 
 }
+
 
 void CanNode::updateDisplay()
 {
@@ -93,6 +128,9 @@ class Host : public cSimpleModule
         virtual void initialize() override;
         virtual void handleMessage(cMessage *msg) override;
         void updateDisplay();
+        virtual void noGarbageBehavior(cMessage *msg);
+        virtual void slowGarbageBehavior(cMessage *msg);
+        virtual void fastGarbageBehavior(cMessage *msg);
     private:
         cMessage *msgDelay;
         cMessage *timeoutEvent;
@@ -104,6 +142,7 @@ class Host : public cSimpleModule
         int rcvdHostFast;
         int sentHostSlow;
         int rcvdHostSlow;
+        int configType;  // define behaviour of node based on config
 };
 
 Define_Module(Host);
@@ -119,6 +158,8 @@ void Host::initialize()
     rcvdHostFast = 0;
     sentHostSlow = 0;
     rcvdHostSlow = 0;
+    
+    configType = this->getParentModule()->par("configType");
 
     // first message
     msgDelay = new cMessage("msgDelay");
@@ -132,7 +173,17 @@ void Host::initialize()
 
 void Host::handleMessage(cMessage *msg)
 {
+    if (configType == 1) {
+        noGarbageBehavior(msg);
+    } else if (configType == 2) {
+        slowGarbageBehavior(msg);
+    } else {
+        fastGarbageBehavior(msg);
+    }
+}
 
+void Host::noGarbageBehavior(cMessage *msg)
+{
     if (msg == msgDelay) {
         if (trashCanInteracted == 0) {
             // This block is executed when the delayed message is triggered
@@ -193,6 +244,33 @@ void Host::handleMessage(cMessage *msg)
         rcvdHostFast++;
         updateDisplay();
     }
+}
+
+void Host::slowGarbageBehavior(cMessage *msg)
+{
+    if (msg == msgDelay) {
+        EV << "Initial Message at t=4.0" << endl;
+
+        // Send the message through the specified output gate by index
+        cMessage *firstMessage = new cMessage("1-Is the can full?");
+        send(firstMessage, "out", 0); // "out" is the base name of the gates, targetGateIndex is the gate index
+    } else if (msg == timeoutEvent) {
+        // Handle timeout events for interaction with first trash can
+        if (timeoutCounter < 3) {
+            cMessage *newMsg = new cMessage("1-Is the can full?");
+            send(newMsg, "out", 0);
+
+            EV << "Timeout expired, resending message and restarting timer\n";
+            scheduleAt(simTime()+timeout, timeoutEvent);
+            timeoutCounter++;
+
+        }
+    }
+}
+
+void Host::fastGarbageBehavior(cMessage *msg)
+{
+
 }
 
 void Host::updateDisplay()
