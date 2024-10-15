@@ -130,7 +130,7 @@ void CanNode::fastGarbageBehavior(cMessage *msg)
         if (msgCounter >= 3) {
             EV << "final msg of this trash can to host";
             cMessage *newMsg = new cMessage("3-YES");
-            sentCanFast++;
+            sentCanFast += 2;
             rcvdCanFast++;
             updateDisplay();
             send(newMsg, "out", 1);
@@ -148,7 +148,7 @@ void CanNode::fastGarbageBehavior(cMessage *msg)
         if (msgCounter2 >= 3) {
             EV << "final msg of this trash can";
             cMessage *newMsg = new cMessage("6-YES");
-            sentCanFast2++;
+            sentCanFast2 += 2;
             rcvdCanFast2++;
             updateDisplay2();
             send(newMsg, "out", 1);
@@ -162,6 +162,12 @@ void CanNode::fastGarbageBehavior(cMessage *msg)
             bubble("Lost Message");
         }
         msgCounter2++;
+    } else if (strcmp(msg->getName(), "8-OK") == 0) {
+        rcvdCanFast++;
+        updateDisplay();
+    } else if (strcmp(msg->getName(), "10-OK") == 0) {
+        rcvdCanFast2++;
+        updateDisplay2();
     }
 }
 
@@ -184,6 +190,22 @@ void CanNode::finish()
         textFigureAnotherCan->setText("Connection from the anotherCan to others (time it takes) = 100\nConnection from others to the anotherCan (time it takes) = 100\n\n");
 
         textFigureCloud->setText("Slow connection from the Cloud to others (time it takes) = 0\nSlow connection from others to the Cloud (time it takes) = 0\nFast connection from the Cloud to others (time it takes) = 0\nFast connection from others to the Cloud (time it takes) = 0");
+    } else if (configType == 2) {
+        textFigureHost->setText("Slow connection from the smartphone to others (time it takes) = 400\nSlow connection from others to the smartphone (time it takes) = 400\nFast connection from the smartphone to others (time it takes) = 800\nFast connection from others to the smartphone (time it takes) = 200\n\n");
+
+        textFigureCan->setText("Connection from the can to others (time it takes) = 100\nConnection from others to the can (time it takes) = 100\n\n");
+
+        textFigureAnotherCan->setText("Connection from the anotherCan to others (time it takes) = 100\nConnection from others to the anotherCan (time it takes) = 100\n\n");
+
+        textFigureCloud->setText("Slow connection from the Cloud to others (time it takes) = 400\nSlow connection from others to the Cloud (time it takes) = 400\nFast connection from the Cloud to others (time it takes) = 0\nFast connection from others to the Cloud (time it takes) = 0");
+    } else if (configType == 3) {
+        textFigureHost->setText("Slow connection from the smartphone to others (time it takes) = 0\nSlow connection from others to the smartphone (time it takes) = 0\nFast connection from the smartphone to others (time it takes) = 800\nFast connection from others to the smartphone (time it takes) = 200\n\n");
+
+        textFigureCan->setText("Connection from the can to others (time it takes) = 200\nConnection from others to the can (time it takes) = 200\n\n");
+
+        textFigureAnotherCan->setText("Connection from the anotherCan to others (time it takes) = 200\nConnection from others to the anotherCan (time it takes) = 200\n\n");
+
+        textFigureCloud->setText("Slow connection from the Cloud to others (time it takes) = 0\nSlow connection from others to the Cloud (time it takes) = 0\nFast connection from the Cloud to others (time it takes) = 200\nFast connection from others to the Cloud (time it takes) = 200");
     }
 }
 
@@ -374,11 +396,19 @@ void Host::slowGarbageBehavior(cMessage *msg)
     } else if (strcmp(msg->getName(), "3-YES") == 0) {
         EV << "Sending first message to cloud\n";
         cMessage *newMsg = new cMessage("7-Collect garbage");
+
+        rcvdHostFast++;
+        sentHostSlow++;
+        updateDisplay();
+
         send(newMsg, "out", 2);
     } else if (strcmp(msg->getName(), "8-OK") == 0) {
         EV << "Received first ok from cloud\n";
         timeoutCounter = 0;
         trashCanInteracted = 1;
+
+        rcvdHostSlow++;
+        updateDisplay();
 
         // send first message to 2nd trash can
         msgDelay = new cMessage("msgDelay");
@@ -390,7 +420,15 @@ void Host::slowGarbageBehavior(cMessage *msg)
     } else if (strcmp(msg->getName(), "6-YES") == 0) {
         EV << "Sending SECOND message to cloud\n";
         cMessage *newMsg = new cMessage("9-Collect garbage");
+
+        rcvdHostFast++;
+        sentHostSlow++;
+        updateDisplay();
+
         send(newMsg, "out", 2);
+    } else if (strcmp(msg->getName(), "10-OK") == 0) {
+        rcvdHostSlow++;
+        updateDisplay();
     }
 }
 
@@ -472,9 +510,14 @@ class CloudNode : public cSimpleModule
         virtual void noGarbageBehaviour(cMessage *msg);
         virtual void slowGarbageBehaviour(cMessage *msg);
         virtual void fastGarbageBehaviour(cMessage *msg);
+        void updateDisplay();
     private:
         int configType;
         int interactionCounter;
+        int sentCloudFast;
+        int rcvdCloudFast;
+        int sentCloudSlow;
+        int rcvdCloudSlow;
 };
 
 Define_Module(CloudNode);
@@ -484,6 +527,15 @@ void CloudNode::initialize()
     // init variables
     configType = par("configType");
     interactionCounter = 0;
+
+    if (configType == 1) {
+        getDisplayString().setTagArg("t", 0, "");
+    }
+
+    sentCloudFast = 0;
+    rcvdCloudFast = 0;
+    sentCloudSlow = 0;
+    rcvdCloudSlow = 0;
 }
 
 void CloudNode::handleMessage(cMessage *msg)
@@ -507,9 +559,19 @@ void CloudNode::slowGarbageBehaviour(cMessage *msg)
     if (interactionCounter == 0) {
         interactionCounter++;
         cMessage *newMsg = new cMessage("8-OK");
+
+        sentCloudSlow++;
+        rcvdCloudSlow++;
+        updateDisplay();
+
 		send(newMsg, "out", 2);
     } else {
         cMessage *newMsg = new cMessage("10-OK");
+
+        sentCloudSlow++;
+        rcvdCloudSlow++;
+        updateDisplay();
+
 		send(newMsg, "out", 2);
     }
 }
@@ -519,12 +581,31 @@ void CloudNode::fastGarbageBehaviour(cMessage *msg)
     if (interactionCounter == 0) {
         interactionCounter++;
         cMessage *newMsg = new cMessage("8-OK");
+
+        sentCloudFast++;
+        rcvdCloudFast++;
+        updateDisplay();
+
         send(newMsg, "out", 0);
     } else {
         cMessage *newMsg = new cMessage("10-OK");
+
+        sentCloudFast++;
+        rcvdCloudFast++;
+        updateDisplay();
+
         send(newMsg, "out", 1);
     }
 }
+
+void CloudNode::updateDisplay()
+{
+    char displayText[64];
+
+    sprintf(displayText, "sentCloudFast: %d rcvdCloudFast: %d sentCloudSlow: %d rcvdCloudSlow: %d", sentCloudFast, rcvdCloudFast, sentCloudSlow, rcvdCloudSlow);
+    getDisplayString().setTagArg("t", 0, displayText);
+}
+
 ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////
 

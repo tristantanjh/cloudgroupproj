@@ -99,7 +99,7 @@ network GarbageCollectionSystem
         }
         cloud: CloudNode {
             parameters:
-                @display("p=548.1763,226.785;r=360");
+                @display("p=548.1763,226.785;r=360;t=sentCloudFast: 0 rcvdCloudFast: 0 sentCloudSlow: 0 rcvdCloudSlow: 0");
         }
         host[numHosts]: TruckHost {
             parameters:
