@@ -21,6 +21,7 @@ import inet.environment.common.PhysicalEnvironment;
 simple CanNode
 {
     parameters:
+        int configType = default(1);
         @display("i=block/bucket");
     gates:
         input in[];
@@ -31,6 +32,7 @@ simple CanNode
 simple CloudNode
 {
     parameters:
+        int configType = default(1);
         @display("i=old/pc");
     gates:
         input in[];
@@ -56,7 +58,7 @@ simple Host
 
 module TruckHost  {
     parameters:
-        bool left = default(false); // Flag indicating whether the book is in the left-hand shelf
+        int configType = default(1);
         @display("i=device/pocketpc"); // add a default icon
 	gates:
 	    input in[];
@@ -75,7 +77,7 @@ module TruckHost  {
         host.in[2] <-- in[2];
 }
 
-network GarbageCollectionNetwork
+network GarbageCollectionSystem
 {
     parameters:
         int numHosts;

@@ -8,9 +8,13 @@ class CanNode : public cSimpleModule
     protected:
         virtual void initialize() override;
         virtual void handleMessage(cMessage *msg) override;
+        virtual void behaviour1(cMessage *msg);
+        virtual void behaviour2(cMessage *msg);
+        virtual void behaviour3(cMessage *msg);
     private:
         int msgCounter;
         int msgCounter2;
+        int configType;  // define behaviour of node based on config
 };
 
 Define_Module(CanNode);
@@ -20,9 +24,22 @@ void CanNode::initialize()
     // init variables
     msgCounter = 0;
     msgCounter2 = 0;
+    configType = par("configType");
+
 }
 
 void CanNode::handleMessage(cMessage *msg)
+{
+    if (configType == 1) {
+        behaviour1(msg);
+    } else if (configType == 2) {
+        behaviour2(msg);
+    } else {
+        behaviour3(msg);
+    }
+}
+
+void CanNode:: behaviour1(cMessage *msg)
 {
     if (strcmp(msg->getName(), "1-Is the can full?") == 0){
         if (msgCounter >= 3) {
@@ -43,6 +60,22 @@ void CanNode::handleMessage(cMessage *msg)
         }
         msgCounter2++;
     }
+}
+
+void CanNode:: behaviour2(cMessage *msg)
+{
+    if (msgCounter >= 3) {
+        EV << "final msg of this trash can";
+        cMessage *newMsg = new cMessage("3-YES");
+        send(newMsg, "out", 1);
+    } else {
+        bubble("Lost Message");
+    }
+    msgCounter++;
+}
+
+void CanNode:: behaviour3(cMessage *msg)
+{
 
 }
 
@@ -55,6 +88,9 @@ class Host : public cSimpleModule
     protected:
         virtual void initialize() override;
         virtual void handleMessage(cMessage *msg) override;
+        virtual void behaviour1(cMessage *msg);
+        virtual void behaviour2(cMessage *msg);
+        virtual void behaviour3(cMessage *msg);
     private:
         cMessage *msgDelay;
         cMessage *timeoutEvent;
@@ -62,6 +98,7 @@ class Host : public cSimpleModule
         simtime_t timeout;  // how long to consider as timeout
         int timeoutCounter;
         int trashCanInteracted;
+        int configType;  // define behaviour of node based on config
 };
 
 Define_Module(Host);
@@ -73,6 +110,7 @@ void Host::initialize()
     timeout = 1.0;
     timeoutCounter = 0;
     trashCanInteracted = 0;
+    configType = this->getParentModule()->par("configType");
 
     // first message
     msgDelay = new cMessage("msgDelay");
@@ -86,7 +124,17 @@ void Host::initialize()
 
 void Host::handleMessage(cMessage *msg)
 {
+    if (configType == 1) {
+        behaviour1(msg);
+    } else if (configType == 2) {
+        behaviour2(msg);
+    } else {
+        behaviour3(msg);
+    }
+}
 
+void Host::behaviour1(cMessage *msg)
+{
     if (msg == msgDelay) {
         if (trashCanInteracted == 0) {
             // This block is executed when the delayed message is triggered
@@ -132,6 +180,33 @@ void Host::handleMessage(cMessage *msg)
         timeoutEvent = new cMessage("second timeout");
         scheduleAt(simTime() + initialDelay + timeout, timeoutEvent);
     }
+}
+
+void Host::behaviour2(cMessage *msg)
+{
+    if (msg == msgDelay) {
+        EV << "Initial Message at t=4.0" << endl;
+
+        // Send the message through the specified output gate by index
+        cMessage *firstMessage = new cMessage("1-Is the can full?");
+        send(firstMessage, "out", 0); // "out" is the base name of the gates, targetGateIndex is the gate index
+    } else if (msg == timeoutEvent) {
+        // Handle timeout events for interaction with first trash can
+        if (timeoutCounter < 3) {
+            cMessage *newMsg = new cMessage("1-Is the can full?");
+            send(newMsg, "out", 0);
+
+            EV << "Timeout expired, resending message and restarting timer\n";
+            scheduleAt(simTime()+timeout, timeoutEvent);
+            timeoutCounter++;
+
+        }
+    }
+}
+
+void Host::behaviour3(cMessage *msg)
+{
+
 }
 
 
