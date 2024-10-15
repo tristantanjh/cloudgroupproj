@@ -56,13 +56,14 @@ simple Host
         output out[3];
 }
 
-module TruckHost  {
+module TruckHost
+{
     parameters:
         int configType = default(1);
         @display("i=device/pocketpc"); // add a default icon
-	gates:
-	    input in[];
-	    output out[];
+    gates:
+        input in[];
+        output out[];
     submodules:
         mobility: <default("StationaryMobility")> like IMobility {
             @display("p=100,100;is=s");
@@ -87,7 +88,7 @@ network GarbageCollectionSystem
         @figure[canText](type=text; pos=750,180; text="Connection from the can to others (time it takes) = \nConnection from others to the can (time it takes) = \n\n"; color=black; font="Arial, 5");
         @figure[anotherCanText](type=text; pos=750,230; text="Connection from the anotherCan to others (time it takes) = \nConnection from others to the anotherCan (time it takes) = \n\n"; color=black; font="Arial, 5");
         @figure[cloudText](type=text; pos=750,300; text="Slow connection from the Cloud to others (time it takes) = \nSlow connection from others to the Cloud (time it takes) = \nFast connection from the Cloud to others (time it takes) = \nFast connection from others to the Cloud (time it takes) ="; color=black; font="Arial, 5");
-        
+
     submodules:
         can: CanNode {
             parameters:
@@ -99,18 +100,18 @@ network GarbageCollectionSystem
         }
         cloud: CloudNode {
             parameters:
-                @display("p=548.1763,226.785;r=360;t=sentCloudFast: 0 rcvdCloudFast: 0 sentCloudSlow: 0 rcvdCloudSlow: 0");
+                @display("p=548.1763,226.785;r=360;t=sentCloudFast: 0 rcvdCloudFast: 0 sentCloudSlow: 0 rcvdCloudSlow: 0;i=block/encap");
         }
         host[numHosts]: TruckHost {
             parameters:
-                @display("p=450.76874,100.51625;r=45;t=sentHostFast: 0 rcvdHostFast: 0 sentHostSlow: 0 rcvdHostSlow: 0");
+                @display("p=450.76874,100.51625;r=45;t=sentHostFast: 0 rcvdHostFast: 0 sentHostSlow: 0 rcvdHostSlow: 0;i=block/wheelbarrow");
         }
         visualizer: IntegratedVisualizer {
             @display("p=671.16,29.61");
         }
         physicalEnvironment: PhysicalEnvironment {
             parameters:
-                @display("p=607.2425,328.49124");
+                @display("p=31.874998,374.53125;b=0,0,oval,,,00;i=-");
         }
     connections:
         can.out++ --> {  delay = 100ms; } --> cloud.in++;
