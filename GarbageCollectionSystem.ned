@@ -121,6 +121,6 @@ network GarbageCollectionSystem
         anotherCan.out++ --> {  delay = 100ms; } --> host[0].in++;
         anotherCan.in++ <-- {  delay = 100ms; } <-- host[0].out++;
 
-        host[0].out++ --> {  delay = 100ms; } --> cloud.in++;
-        host[0].in++ <-- {  delay = 100ms; } <-- cloud.out++;
+        host[0].out++ --> {  delay = 200ms; } --> cloud.in++;
+        host[0].in++ <-- {  delay = 200ms; } <-- cloud.out++;
 }
