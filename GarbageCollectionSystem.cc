@@ -41,6 +41,19 @@ void CanNode::initialize()
     rcvdCanFast2 = 0;
 
     configType = par("configType");
+
+    cModule *network = getParentModule();
+
+    cCanvas *canvas = network->getCanvas();
+
+    cTextFigure *textFigureBackground = check_and_cast<cTextFigure*>(canvas->getFigure("backgroundText"));
+
+    if (configType == 2) {
+        textFigureBackground->setText("Cloud-based solution with slow messages");
+    } else if (configType == 3) {
+        textFigureBackground->setText("Fog-based solution with fast messages");
+    }
+
 }
 
 void CanNode::handleMessage(cMessage *msg)
